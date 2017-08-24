@@ -14,10 +14,56 @@ console.log('Running in environment: ' + process.env.NODE_ENV);
 const knex = require('knex')(config[process.env.NODE_ENV]);
 const bookshelf = require('bookshelf')(knex);
 
-// This is a good place to start!
+// models
+const User = bookshelf.Model.extend({
+  tableName: 'users',
+  hasTimestamps: true
+});
+exports.User = User;
 
+exports.Posts = bookshelf.Model.extend({
+  tableName: 'posts'
+});
 
+exports.Comments = bookshelf.Model.extend({
+  tableName: 'comments',
+  hasTimestamps: true
+});
 
+// routes
+
+const validUser = user => (
+  user && user.name && user.email && user.username
+)
+
+app.post('/user', (req, res) => {
+  const user = req.body;
+  if (validUser(user)) {
+    User.forge(user).save()
+    .then(usr => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type','application/json; charset=utf-8');
+      res.end(JSON.stringify(usr));
+    });
+  } else {
+    res.statusCode = 400;
+    res.end();
+  }
+});
+
+app.get('/user/:id', (req, res) => {
+  User.forge({id: req.params.id})
+    .fetch()
+    .then((user) => {
+      if (user) {
+        res.statusCode = 200;
+        res.setHeader('Content-Type','application/json; charset=utf-8');
+        res.end(JSON.stringify(user));
+      } else {
+        res.sendStatus(404);
+      }
+    });
+});
 
 // Exports for Server hoisting.
 const listen = (port) => {

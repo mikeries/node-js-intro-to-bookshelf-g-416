@@ -3,8 +3,10 @@
 module.exports = {
 
   testing: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
+      user: 'michael',
+      password: 'peanut',
       database: 'learnco_blog_test'
     },
     pool: {
@@ -17,8 +19,10 @@ module.exports = {
   },
 
   development: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
+      user: 'michael',
+      password: 'peanut',
       database: 'learnco_blog',
     },
     pool: {
