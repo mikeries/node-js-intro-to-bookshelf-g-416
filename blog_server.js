@@ -21,9 +21,11 @@ const User = bookshelf.Model.extend({
 });
 exports.User = User;
 
-exports.Posts = bookshelf.Model.extend({
-  tableName: 'posts'
+const Posts = bookshelf.Model.extend({
+  tableName: 'posts',
+  hasTimestamps: true
 });
+exports.Posts = Posts;
 
 exports.Comments = bookshelf.Model.extend({
   tableName: 'comments',
@@ -59,6 +61,21 @@ app.get('/user/:id', (req, res) => {
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json; charset=utf-8');
         res.end(JSON.stringify(user));
+      } else {
+        res.sendStatus(404);
+      }
+    });
+});
+
+app.get('/post/:id', (req, res) => {
+  Posts.forge({id: req.params.id})
+    .fetch()
+    .then((post) => {
+      console.log(post)
+      if (post) {
+        res.statusCode = 200;
+        res.setHeader('Content-Type','application/json; charset=utf-8');
+        res.end(JSON.stringify(post));
       } else {
         res.sendStatus(404);
       }

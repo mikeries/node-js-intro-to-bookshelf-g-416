@@ -4,6 +4,7 @@ exports.up = function(knex, Promise) {
         t.string('title');
         t.string('body');
         t.integer('author');
+        t.timestamps();
     });
 };
 
