@@ -17,13 +17,21 @@ const bookshelf = require('bookshelf')(knex);
 // models
 const User = bookshelf.Model.extend({
   tableName: 'users',
-  hasTimestamps: true
+  hasTimestamps: true,
+
+  posts: function() {
+    return this.hasMany('Posts');
+  }
 });
 exports.User = User;
 
 const Posts = bookshelf.Model.extend({
   tableName: 'posts',
-  hasTimestamps: true
+  hasTimestamps: true,
+
+  author: function() {
+    return this.belongsTo('User');
+  }
 });
 exports.Posts = Posts;
 
@@ -69,12 +77,12 @@ app.get('/user/:id', (req, res) => {
 
 app.get('/post/:id', (req, res) => {
   Posts.forge({id: req.params.id})
-    .fetch()
+    .fetch({withRelated: ['author']})
     .then((post) => {
-      console.log(post)
       if (post) {
         res.statusCode = 200;
         res.setHeader('Content-Type','application/json; charset=utf-8');
+        console.log(JSON.stringify(post))
         res.end(JSON.stringify(post));
       } else {
         res.sendStatus(404);
